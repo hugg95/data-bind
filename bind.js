@@ -5,7 +5,7 @@
  * released under terms of MIT lincese
  */
 
-;(function(global, doc, S) {
+;(function(global, doc, Sizzle, undefined) {
     
     'use strict';
 
@@ -25,7 +25,7 @@
             scope;
 
         for (; i < len; i++) {
-            var temp = S(tag[i] + '[bind-scope]');
+            var temp = Sizzle(tag[i] + '[bind-scope]');
             if (temp && temp.length) {
                 scope = temp;
             }
@@ -35,52 +35,64 @@
 
     };
 
-    var sc = findScope();
-    var html = sc.innerHTML;
-    var cp = html;
-    scope.title = 'demo test';
-    scope.name = 'victor';
-    var reg = /\{\{\w+\}\}/g;
-    var a = reg.exec(html);
-    var re = [];
-    while (a) {
-        var o = {};
-        var k = a[0].substr(2, a[0].length - 4);
-        o[k]= a.index;
-        re.push(o);
-        //console.log(a);
-        a = reg.exec(html);
-    }
+    function getHtml(scope) {
+        return scope.innerHTML;
+    };
 
-    re.sort(function(a, b) {
-        for (var k1 in a) {
-            for (var k2 in b) {
-                if (a[k1] > b[k2]) {
-                    return false;
+    function analyseBindTag(html) {
+        var tagReg = /\{\{\w+\}\}/g,
+            match = tagReg.exec(html),
+            tags = [];
+
+        while (match) {
+            var obj = {},
+                key = match[0].replace(/\{\{/, '').replace(/\}\}/, '');
+            obj[key] = match.index;
+            tags.push(obj);
+
+            match = tagReg.exec(html);
+        }
+
+        tags.sort(function(a, b) {
+            for (var k1 in a) {
+                for (k2 in b) {
+                    if (a[k1] > b[k2]) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        });
+
+        return tags;
+    };
+
+    function replaceBindTag(html, tags) {
+        var i = 0, len = tags.length, generated = html;
+        for (; i < len; i++) {
+            var ele = tags[i];
+            for (var key in ele) {
+                if (Bind.scope[key]) {
+                    var reg = new RegExp('\{\{' + key + '\}\}');
+                    generated = generated.replace(reg, Bind.scope[key]);
                 }
             }
         }
-        return true;
-    });
-    //console.log(re);
-    //console.log(reg.exec(html));
-    //console.log(scope.innerHTML);
 
-    var d = '';
+        return generated;
+    };
 
-    for (var i = 0; i < re.length; i++) {
-        for (var k in re[i]) {
-            if (scope[k]) {
-                console.log(scope[k]);
-                cp = cp.replace('{{' + k + '}}', scope[k]);
-                
-            }
-        }
-    }
+    function repaint(scope, generated) {
+        scope.innerHTML = generated;
+    };
 
-    sc.innerHTML = cp;
+    function init() {
+        var scope = findScope(),
+            html = getHtml(scope),
+            tags = analyseBindTag(html);
+    };
 
     global.Bind = Bind;
-    //console.log(d);
 
-})(window, window.document, Sizzle || jQuery);
+})(window, window.document, Sizzle);
