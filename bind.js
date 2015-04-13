@@ -5,12 +5,37 @@
  * released under terms of MIT lincese
  */
 
-;(function(global, doc) {
+;(function(global, doc, S) {
     
     'use strict';
-    var scope = {};
 
-    var sc = doc.getElementById('scope');
+    var Bind = Bind || {
+        scope: {
+            init: function() {
+
+            }
+        }
+    };
+
+    function findScope() {
+        var tag = ['html', 'body', 'head', 'title', 'div', 'ul', 'li', 'table',
+                    'tr', 'td', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span'],
+            i = 0,
+            len = tag.length,
+            scope;
+
+        for (; i < len; i++) {
+            var temp = S(tag[i] + '[bind-scope]');
+            if (temp && temp.length) {
+                scope = temp;
+            }
+        }
+        
+        return scope;
+
+    };
+
+    var sc = findScope();
     var html = sc.innerHTML;
     var cp = html;
     scope.title = 'demo test';
@@ -54,6 +79,8 @@
     }
 
     sc.innerHTML = cp;
+
+    global.Bind = Bind;
     //console.log(d);
 
-})(window, window.document);
+})(window, window.document, Sizzle || jQuery);
