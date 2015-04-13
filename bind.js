@@ -10,11 +10,7 @@
     'use strict';
 
     var Bind = Bind || {
-        scope: {
-            init: function() {
-
-            }
-        }
+        scope: {}
     };
 
     function findScope() {
