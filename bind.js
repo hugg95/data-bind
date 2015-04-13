@@ -27,10 +27,10 @@
         for (; i < len; i++) {
             var temp = Sizzle(tag[i] + '[bind-scope]');
             if (temp && temp.length) {
-                scope = temp;
+                scope = temp[0];
             }
         }
-        
+
         return scope;
 
     };
@@ -55,7 +55,7 @@
 
         tags.sort(function(a, b) {
             for (var k1 in a) {
-                for (k2 in b) {
+                for (var k2 in b) {
                     if (a[k1] > b[k2]) {
                         return false;
                     }
@@ -87,10 +87,14 @@
         scope.innerHTML = generated;
     };
 
-    function init() {
+    Bind.init = function() {
+        
         var scope = findScope(),
             html = getHtml(scope),
-            tags = analyseBindTag(html);
+            tags = analyseBindTag(html),
+            generated = replaceBindTag(html, tags);
+        repaint(scope, generated);
+
     };
 
     global.Bind = Bind;
