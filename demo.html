@@ -21,10 +21,9 @@
     <script type="text/javascript">
         Binder.module('scope1', function(scope) {
             scope.title1 = 'fsfdfdfd';
-            console.log(scope);
-
+            console.log(Binder);
         });
-        //Bind.init();
+
         Binder.module('scope2', function(scope) {
             scope.title = 'demo test';
             scope.name = 'victor';
@@ -33,7 +32,7 @@
             scope.age = 23;
             scope.like = 'huhu';
             scope.country = 'China';
-            console.log(scope);
+            console.log(Binder);
         });
     </script>
 </html>

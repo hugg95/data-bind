@@ -25,7 +25,7 @@
      */
     function findScope(id) {
 
-        var i = 0, len = tag.length, scope;
+        var i = 0, len = tags.length, scope;
 
         for (; i < len; i++) {
             var selector = tags[i] + '[bind-scope="' + id + '"]',
@@ -73,14 +73,14 @@
         return tags;
     };
 
-    function replaceBinderTag(html, tags) {
+    function replaceBinderTag(html, tags, scope) {
         var i = 0, len = tags.length, generated = html;
         for (; i < len; i++) {
             var ele = tags[i];
             for (var key in ele) {
-                if (Binder.scope[key]) {
+                if (scope[key]) {
                     var reg = new RegExp('\{\{' + key + '\}\}');
-                    generated = generated.replace(reg, Binder.scope[key]);
+                    generated = generated.replace(reg, scope[key]);
                 }
             }
         }
@@ -94,27 +94,34 @@
 
     /**
      * @param id scope id
+     * @param scope
      */
-    function init(id) {
-        var html = getHtml(id),
-            tags = analyseBinderTag(html),
-            generated = replaceBinderTag(html, tags);
+    function exec(id, scope) {
+        if (!scope['replaced']) {
+            var html = getHtml(id),
+                tags = analyseBinderTag(html),
+                replaced = replaceBinderTag(html, tags, scope);
 
-        repaint(id, generated);
+            scope['replaced']  = replaced;
+        }
+
+        var replaced = scope['replaced'];
+
+        repaint(id, replaced);
     };
 
     /**
-     * clear data in scope
+     * initialize the Binder
      */
-    function clear() {
+    function init() {
         Binder.scope = {};
     };
 
     Binder.module = function(id, fn) {
-        clear();
+        Binder.scope[id] = {};
         var scope = findScope(id);
-        fn(Binder.scope);
-        init(scope);
+        fn(Binder.scope[id]);
+        exec(scope, Binder.scope[id]);
     };
 
     global.Binder = Binder;
