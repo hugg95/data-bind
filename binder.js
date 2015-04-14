@@ -15,15 +15,20 @@
         version: '0.0.1'
     };
 
+    // support specify the scope id binding on these tags
+    var tags = ['html', 'body', 'head', 'title', 'div', 'ul', 'li', 'table',
+                    'tr', 'td', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span'];
+
+    /**
+     * find scope in page to execute data binding
+     * @param id a scope id
+     */
     function findScope(id) {
-        var tag = ['html', 'body', 'head', 'title', 'div', 'ul', 'li', 'table',
-                    'tr', 'td', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span'],
-            i = 0,
-            len = tag.length,
-            scope;
+
+        var i = 0, len = tag.length, scope;
 
         for (; i < len; i++) {
-            var selector = tag[i] + '[bind-scope="' + id + '"]',
+            var selector = tags[i] + '[bind-scope="' + id + '"]',
                 temp = Sizzle(selector);
             if (temp && temp.length) {
                 scope = temp[0];
