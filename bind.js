@@ -13,7 +13,7 @@
         scope: {}
     };
 
-    function findScope() {
+    function findScope(id) {
         var tag = ['html', 'body', 'head', 'title', 'div', 'ul', 'li', 'table',
                     'tr', 'td', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span'],
             i = 0,
@@ -21,9 +21,11 @@
             scope;
 
         for (; i < len; i++) {
-            var temp = Sizzle(tag[i] + '[bind-scope]');
+            var selector = tag[i] + '[bind-scope="' + id + '"]',
+                temp = Sizzle(selector);
             if (temp && temp.length) {
                 scope = temp[0];
+                break;
             }
         }
 
@@ -83,14 +85,21 @@
         scope.innerHTML = generated;
     };
 
-    Bind.init = function() {
-        
-        var scope = findScope(),
-            html = getHtml(scope),
+    /**
+     * @param id scope id
+     */
+    function init(id) {
+        var html = getHtml(id),
             tags = analyseBindTag(html),
             generated = replaceBindTag(html, tags);
-        repaint(scope, generated);
 
+        repaint(id, generated);
+    };
+
+    Bind.module = function(id, fn) {
+        var scope = findScope(id);
+        fn(scope);
+        init(scope);
     };
 
     global.Bind = Bind;

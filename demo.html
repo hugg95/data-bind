@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html bind-scope="scope">
-    <head>
-        <title>demo</title>
+<html>
+    <head bind-scope="scope1">
+        <title>{{title1}}</title>
     </head>
-    <body>
+    <body bind-scope="scope2">
         <p>{{title}}</p>
         <div>
             <ul>
@@ -19,13 +19,19 @@
     <script type="text/javascript" src="sizzle.js"></script>
     <script type="text/javascript" src="bind.js"></script>
     <script type="text/javascript">
-        Bind.scope.title = 'demo test';
-        Bind.scope.name = 'victor';
-        Bind.scope.gender = 'male';
-        Bind.scope.region = 'ShangHai';
-        Bind.scope.age = 23;
-        Bind.scope.like = 'huhu';
-        Bind.scope.country = 'China';
-        Bind.init();
+        Bind.module('scope1', function(scope) {
+            Bind.scope.title1 = 'fsfdfdfd';
+
+        });
+        //Bind.init();
+        Bind.module('scope2', function(scope) {
+            Bind.scope.title = 'demo test';
+            Bind.scope.name = 'victor';
+            Bind.scope.gender = 'male';
+            Bind.scope.region = 'ShangHai';
+            Bind.scope.age = 23;
+            Bind.scope.like = 'huhu';
+            Bind.scope.country = 'China';
+        });
     </script>
 </html>
