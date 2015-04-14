@@ -1,5 +1,6 @@
 /**
  * provide data bind ability
+ * 
  * @author victor li
  * @date 2015/04/13
  * released under terms of MIT lincese
@@ -9,8 +10,9 @@
     
     'use strict';
 
-    var Bind = Bind || {
-        scope: {}
+    var Binder = Binder || {
+        scope: {},
+        version: '0.0.1'
     };
 
     function findScope(id) {
@@ -37,7 +39,7 @@
         return scope.innerHTML;
     };
 
-    function analyseBindTag(html) {
+    function analyseBinderTag(html) {
         var tagReg = /\{\{\w+\}\}/g,
             match = tagReg.exec(html),
             tags = [];
@@ -66,14 +68,14 @@
         return tags;
     };
 
-    function replaceBindTag(html, tags) {
+    function replaceBinderTag(html, tags) {
         var i = 0, len = tags.length, generated = html;
         for (; i < len; i++) {
             var ele = tags[i];
             for (var key in ele) {
-                if (Bind.scope[key]) {
+                if (Binder.scope[key]) {
                     var reg = new RegExp('\{\{' + key + '\}\}');
-                    generated = generated.replace(reg, Bind.scope[key]);
+                    generated = generated.replace(reg, Binder.scope[key]);
                 }
             }
         }
@@ -90,18 +92,27 @@
      */
     function init(id) {
         var html = getHtml(id),
-            tags = analyseBindTag(html),
-            generated = replaceBindTag(html, tags);
+            tags = analyseBinderTag(html),
+            generated = replaceBinderTag(html, tags);
 
         repaint(id, generated);
     };
 
-    Bind.module = function(id, fn) {
+    /**
+     * clear data in scope
+     */
+    function clear() {
+        Binder.scope = {};
+    };
+
+    Binder.module = function(id, fn) {
+        clear();
         var scope = findScope(id);
-        fn(scope);
+        fn(Binder.scope);
         init(scope);
     };
 
-    global.Bind = Bind;
+    global.Binder = Binder;
 
 })(window, window.document, Sizzle);
+

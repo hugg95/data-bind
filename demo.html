@@ -17,21 +17,23 @@
         </div>
     </body>
     <script type="text/javascript" src="sizzle.js"></script>
-    <script type="text/javascript" src="bind.js"></script>
+    <script type="text/javascript" src="binder.js"></script>
     <script type="text/javascript">
-        Bind.module('scope1', function(scope) {
-            Bind.scope.title1 = 'fsfdfdfd';
+        Binder.module('scope1', function(scope) {
+            scope.title1 = 'fsfdfdfd';
+            console.log(scope);
 
         });
         //Bind.init();
-        Bind.module('scope2', function(scope) {
-            Bind.scope.title = 'demo test';
-            Bind.scope.name = 'victor';
-            Bind.scope.gender = 'male';
-            Bind.scope.region = 'ShangHai';
-            Bind.scope.age = 23;
-            Bind.scope.like = 'huhu';
-            Bind.scope.country = 'China';
+        Binder.module('scope2', function(scope) {
+            scope.title = 'demo test';
+            scope.name = 'victor';
+            scope.gender = 'male';
+            scope.region = 'ShangHai';
+            scope.age = 23;
+            scope.like = 'huhu';
+            scope.country = 'China';
+            console.log(scope);
         });
     </script>
 </html>
