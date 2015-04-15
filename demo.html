@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html>
-    <head in-scope="scope1">
+    <head data-scope="scope1">
         <title>{{title1}}</title>
     </head>
     <body>
-        <div in-scope="scope2">
+        <div data-scope="scope2">
             <p>{{title}}</p>
             <div>
                 <ul>
-                    <li in-bind="name"></li>
-                    <li in-bind="age"></li>
+                    <li data-bind="name"></li>
+                    <li data-bind="age"></li>
                     <li>{{gender}}</li>
                     <li>{{region}}</li>
                     <li>{{like}}</li>
                     <li>{{country}}</li>
                 </ul>
-                my name: <p in-bind="myname"></p>
+                my name: <p data-bind="myname"></p>
             </div>
         </div>
-        <div in-scope="scope3">
+        <div data-scope="scope3">
             <p>{{test}}</p>
         </div>
     </body>
@@ -27,6 +27,7 @@
     <script type="text/javascript">
         Binder.module('scope1', function(scope) {
             scope.title1 = 'fsfdfdfd';
+            alert();
         });
 
         Binder.module('scope2', function(scope) {

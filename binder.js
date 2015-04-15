@@ -19,8 +19,8 @@
     var tags = ['html', 'body', 'head', 'title', 'div', 'ul', 'li', 'table',
                     'tr', 'td', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span'],
         labels = {
-            inScope: 'in-scope',
-            inBind: 'in-bind'
+            scopeLabel: 'data-scope',
+            bindLabel: 'data-bind'
         };
 
     /**
@@ -31,7 +31,7 @@
     function findScope(id) {
 
         var scope, 
-            selector = '[' + labels.inScope + '="' + id + '"]',
+            selector = '[' + labels.scopeLabel + '="' + id + '"]',
             temp = $(selector);
 
         if (temp && temp.length) {
@@ -77,14 +77,14 @@
 
     function findBinderLabels(context) {
         var result = [], 
-            selector = '[' + labels['inBind'] + ']',
+            selector = '[' + labels['bindLabel'] + ']',
             nodes = $(selector, context);
 
         if (nodes && nodes.length) {
             var i = 0, len = nodes.length;
             for (; i < len; i++) {
                 var node = nodes[i],
-                    name = node.attributes[labels.inBind].value;
+                    name = node.attributes[labels.bindLabel].value;
                 
                 node.innerText = '{{' + name + '}}';
             }
