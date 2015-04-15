@@ -1,27 +1,32 @@
 <!DOCTYPE html>
 <html>
-    <head bind-scope="scope1">
+    <head in-scope="scope1">
         <title>{{title1}}</title>
     </head>
-    <body bind-scope="scope2">
-        <p>{{title}}</p>
-        <div>
-            <ul>
-                <li>{{name}}</li>
-                <li>{{age}}</li>
-                <li>{{gender}}</li>
-                <li>{{region}}</li>
-                <li>{{like}}</li>
-                <li>{{country}}</li>
-            </ul>
+    <body>
+        <div in-scope="scope2">
+            <p>{{title}}</p>
+            <div>
+                <ul>
+                    <li in-bind="name"></li>
+                    <li in-bind="age"></li>
+                    <li>{{gender}}</li>
+                    <li>{{region}}</li>
+                    <li>{{like}}</li>
+                    <li>{{country}}</li>
+                </ul>
+                my name: <p in-bind="myname"></p>
+            </div>
+        </div>
+        <div in-scope="scope3">
+            <p>{{test}}</p>
         </div>
     </body>
-    <script type="text/javascript" src="sizzle.js"></script>
+    <script type="text/javascript" src="jquery-1.11.2.min.js"></script>
     <script type="text/javascript" src="binder.js"></script>
     <script type="text/javascript">
         Binder.module('scope1', function(scope) {
             scope.title1 = 'fsfdfdfd';
-            console.log(Binder);
         });
 
         Binder.module('scope2', function(scope) {
@@ -32,7 +37,11 @@
             scope.age = 23;
             scope.like = 'huhu';
             scope.country = 'China';
-            console.log(Binder);
+            scope.myname = 'Victor Li';
+        });
+
+        Binder.module('scope3', function(scope) {
+            scope.test = 'ohhh';
         });
     </script>
 </html>

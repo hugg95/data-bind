@@ -6,7 +6,7 @@
  * released under terms of MIT lincese
  */
 
-;(function(global, doc, Sizzle, undefined) {
+;(function(global, doc, $, undefined) {
     
     'use strict';
 
@@ -17,48 +17,50 @@
 
     // support specify the scope id binding on these tags
     var tags = ['html', 'body', 'head', 'title', 'div', 'ul', 'li', 'table',
-                    'tr', 'td', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span'];
+                    'tr', 'td', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span'],
+        labels = {
+            inScope: 'in-scope',
+            inBind: 'in-bind'
+        };
 
     /**
      * find scope in page to execute data binding
-     * @param id a scope id
+     *
+     * @param id scope id, specified using "in-scope"
      */
     function findScope(id) {
 
-        var i = 0, len = tags.length, scope;
+        var scope, 
+            selector = '[' + labels.inScope + '="' + id + '"]',
+            temp = $(selector);
 
-        for (; i < len; i++) {
-            var selector = tags[i] + '[bind-scope="' + id + '"]',
-                temp = Sizzle(selector);
-            if (temp && temp.length) {
-                scope = temp[0];
-                break;
-            }
+        if (temp && temp.length) {
+            scope = temp[0];
         }
 
         return scope;
 
     };
 
-    function getHtml(scope) {
-        return scope.innerHTML;
+    function getHtml(context) {
+        return context.innerHTML;
     };
 
-    function analyseBinderTag(html) {
+    function findBinderMarks(html) {
         var tagReg = /\{\{\w+\}\}/g,
             match = tagReg.exec(html),
-            tags = [];
+            marks = [];
 
         while (match) {
             var obj = {},
                 key = match[0].replace(/\{\{/, '').replace(/\}\}/, '');
             obj[key] = match.index;
-            tags.push(obj);
+            marks.push(obj);
 
             match = tagReg.exec(html);
         }
 
-        tags.sort(function(a, b) {
+        marks.sort(function(a, b) {
             for (var k1 in a) {
                 for (var k2 in b) {
                     if (a[k1] > b[k2]) {
@@ -70,44 +72,66 @@
             return true;
         });
 
-        return tags;
+        return marks;
     };
 
-    function replaceBinderTag(html, tags, scope) {
-        var i = 0, len = tags.length, generated = html;
+    function findBinderLabels(context) {
+        var result = [], 
+            selector = '[' + labels['inBind'] + ']',
+            nodes = $(selector, context);
+
+        if (nodes && nodes.length) {
+            var i = 0, len = nodes.length;
+            for (; i < len; i++) {
+                var node = nodes[i],
+                    name = node.attributes[labels.inBind].value;
+                
+                node.innerText = '{{' + name + '}}';
+            }
+        }
+
+        return context;
+
+    };
+
+    function replaceBinderMarks(html, tags, scope) {
+        var i = 0, len = tags.length, replaced = html;
         for (; i < len; i++) {
             var ele = tags[i];
             for (var key in ele) {
                 if (scope[key]) {
                     var reg = new RegExp('\{\{' + key + '\}\}');
-                    generated = generated.replace(reg, scope[key]);
+                    replaced = replaced.replace(reg, scope[key]);
                 }
             }
         }
 
-        return generated;
+        return replaced;
     };
 
-    function repaint(scope, generated) {
-        scope.innerHTML = generated;
+    function repaint(scope, replaced) {
+        scope.innerHTML = replaced;
     };
 
     /**
      * @param id scope id
      * @param scope
      */
-    function exec(id, scope) {
+    function execute(context, scope) {
+        
+        context = findBinderLabels(context);
+
         if (!scope['replaced']) {
-            var html = getHtml(id),
-                tags = analyseBinderTag(html),
-                replaced = replaceBinderTag(html, tags, scope);
+            var html = getHtml(context),
+                tags = findBinderMarks(html),
+                replaced = replaceBinderMarks(html, tags, scope);
 
             scope['replaced']  = replaced;
         }
 
         var replaced = scope['replaced'];
 
-        repaint(id, replaced);
+        repaint(context, replaced);
     };
 
     /**
@@ -117,14 +141,24 @@
         Binder.scope = {};
     };
 
+    /**
+     * 
+     */
     Binder.module = function(id, fn) {
-        Binder.scope[id] = {};
-        var scope = findScope(id);
-        fn(Binder.scope[id]);
-        exec(scope, Binder.scope[id]);
+        if (!fn || typeof fn !== 'function') {
+            throw new Error('fn must be a valid Function instance');
+        }
+
+        var context = findScope(id),
+            scope = {};
+
+        scope[id] = null;
+        
+        fn(scope);
+        execute(context, scope);
     };
 
     global.Binder = Binder;
 
-})(window, window.document, Sizzle);
+})(window, window.document, jQuery);
 
